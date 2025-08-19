@@ -1,7 +1,6 @@
 # Developed by: Aniket Kumar Jha
 
 import pygame
-import time
 import random
 import os
 
@@ -190,19 +189,19 @@ def game_loop():
 
         # Draw special food (big purple ball) if active
         if special_food:
-            pygame.draw.circle(win, special_food_color, (special_food[0] + snake_block // 2, special_food[1] + snake_block // 2), 12)
+            pygame.draw.circle(win, special_food_color,
+                               (special_food[0] + snake_block // 2, special_food[1] + snake_block // 2), 12)
 
-            # Timer countdown
-            special_food_timer -= 1 / snake_speed
-            if special_food_timer <= 0:
+            # Calculate remaining time
+            remaining_time = (special_food_timer - pygame.time.get_ticks()) // 1000
+            if remaining_time <= 0:
                 special_food = None
             else:
-                special_food_value = max(1, int(special_food_timer))
-
-            # Render timer text centered inside special food ball
-            timer_text = font_style.render(str(special_food_value), True, white)
-            text_rect = timer_text.get_rect(center=(special_food[0] + snake_block // 2, special_food[1] + snake_block // 2))
-            win.blit(timer_text, text_rect)
+                special_food_value = remaining_time
+                timer_text = font_style.render(str(remaining_time), True, white)
+                text_rect = timer_text.get_rect(center=(special_food[0] + snake_block // 2,
+                                                        special_food[1] + snake_block // 2))
+                win.blit(timer_text, text_rect)
 
         snake_Head = [x1, y1]
         snake_List.append(snake_Head)
@@ -227,7 +226,7 @@ def game_loop():
             # Spawn special food every 5 normal foods eaten
             if food_eaten % 5 == 0:
                 special_food = generate_food(snake_List)
-                special_food_timer = 11  # seconds
+                special_food_timer = pygame.time.get_ticks() + 11000  # 11 seconds in ms
                 special_food_value = 11
 
         # Check if snake eats special food (distance based collision)
